@@ -8,7 +8,7 @@ import io.netty.buffer.ByteBufOutputStream;
 
 public class KryoPool {
 
-	private static final byte[] LENGTH_PLACEHOLDER = new byte[4];
+	public static final byte[] LENGTH_PLACEHOLDER = new byte[4];
 
 	private KyroFactory kyroFactory;
 
@@ -31,6 +31,11 @@ public class KryoPool {
 
 	public void encode(final ByteBuf out, final Object message) throws IOException {
 		ByteBufOutputStream bout = new ByteBufOutputStream(out);
+		/**
+		 *KryoDecoder继承至LengthFieldBasedFrameDecoder，这是个
+		 * 带长度属性的，即前4位将被写入数据包的长度，以解决粘包问题
+		 * http://blog.csdn.net/zshake/article/details/50387421
+		 */
 		bout.write(LENGTH_PLACEHOLDER);
 		KryoSerialization kryoSerialization = new KryoSerialization(kyroFactory);
 		kryoSerialization.serialize(bout, message);
